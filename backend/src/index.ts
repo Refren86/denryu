@@ -1,10 +1,11 @@
 import cors from 'cors';
 import express from 'express';
-import mongoose, { ConnectOptions } from 'mongoose';
 import cookieParser from 'cookie-parser';
+import mongoose, { ConnectOptions } from 'mongoose';
 
 import apiRoutes from './routes/api.routes';
 import { PORT, MONGODB_URL } from './constants/env';
+import errorMiddleware from './middlewares/error.middleware';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(cookieParser());
 app.use(cors());
 
 app.use(apiRoutes);
+app.use(errorMiddleware)
 
 const start = async () => {
   try {

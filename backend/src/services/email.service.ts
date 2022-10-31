@@ -1,39 +1,60 @@
 import nodemailer from 'nodemailer';
+import { google } from 'googleapis';
 
 import {
   API_URL,
-  SMTP_HOST,
-  SMTP_PASSWORD,
-  SMTP_PORT,
-  SMTP_USER,
+  OAUTH_CLIENT_ID,
+  OAUTH_CLIENT_SECRET,
+  OAUTH_REDIRECT_URL,
+  OAUTH_REFRESH_TOKEN,
+  OAUTH_SERVICE,
+  OAUTH_MAIL,
 } from '../constants/env';
+
+const OAuth2 = google.auth.OAuth2;
+
+const oauth2Client = new OAuth2(
+  OAUTH_CLIENT_ID, // Client Id
+  OAUTH_CLIENT_SECRET, // Client Secret
+  OAUTH_REDIRECT_URL // Redirect URL
+);
+
+oauth2Client.setCredentials({
+  refresh_token: OAUTH_REFRESH_TOKEN,
+});
+
+const accessToken = oauth2Client.getAccessToken().then(res => res.token);
 
 class EmailService {
   private transporter: nodemailer.Transporter;
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      host: SMTP_HOST,
-      port: Number(SMTP_PORT),
-      secure: true, // read more
+      service: OAUTH_SERVICE,
       auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASSWORD,
+        type: 'OAuth2',
+        user: OAUTH_MAIL,
+        clientId: OAUTH_CLIENT_ID,
+        clientSecret: OAUTH_CLIENT_SECRET,
+        refreshToken: OAUTH_REFRESH_TOKEN,
+        accessToken: String(accessToken),
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
   }
 
   async sendActivationMail(to: string, link: string) {
     await this.transporter.sendMail({
-      from: SMTP_USER,
-      to,
+      from: OAUTH_MAIL,
+      to, // 'email1@gmail.com, email2@gmail.com, email3@gmail.com'
       subject: `Account activation on ${API_URL}`,
-      text: '',
-      html: `<div>
+      html: `
+      <div>
           <h1>For activation, follow the link:</h1>
           <a href="${link}">${link}</a>
-        </div>`,
+      </div>`,
     });
   }
 }

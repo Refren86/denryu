@@ -4,6 +4,7 @@ import { v4 as randomString } from 'uuid';
 
 import UserDto from '../dtos/user.dto';
 import UserModel from '../models/user.model';
+import ApiError from '../exceptions/api.error';
 import { API_URL } from '../constants/env';
 import { emailService } from './email.service';
 import { tokenService } from './token.service';
@@ -17,7 +18,7 @@ class UserService {
     const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
-      throw new Error(`User with email ${email} already exist`);
+      throw ApiError.BadRequest(`User with email ${email} already exist`);
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -51,6 +52,18 @@ class UserService {
       ...tokens,
       user: userDto,
     };
+  }
+
+  async activate(activationLink: string) {
+    const user = await UserModel.findOne({ activationLink });
+
+    // if user with specified activation link doesn't exist
+    if (!user) {
+      throw ApiError.BadRequest('Incorrect activation link')
+    }
+
+    user.isActivated = true;
+    await user.save(); // now user is activated and email is checked
   }
 }
 
