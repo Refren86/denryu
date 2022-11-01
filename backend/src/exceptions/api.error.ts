@@ -1,6 +1,6 @@
 export default class ApiError extends Error {
   status: number; // http status
-  errors: any[];
+  errors: any[]; // validation fail errors (needs type!)
 
   constructor(status: number, message: string, errors: any[] = []) {
     super(message);

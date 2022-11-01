@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
 const API_URL = process.env.API_URL;
+const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL;
 const MONGODB_URL = process.env.MONGODB_URL;
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
@@ -12,8 +12,8 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 const OAUTH_MAIL = process.env.OAUTH_MAIL;
 const OAUTH_SERVICE = process.env.OAUTH_SERVICE;
 const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID; 
-const OAUTH_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET; 
 const OAUTH_REDIRECT_URL = process.env.OAUTH_REDIRECT_URL; 
+const OAUTH_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET; 
 const OAUTH_REFRESH_TOKEN = process.env.OAUTH_REFRESH_TOKEN; 
 
 export {

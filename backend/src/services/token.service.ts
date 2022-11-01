@@ -1,20 +1,15 @@
-import jwt from 'jsonwebtoken';
-
 import UserDto from '../dtos/user.dto';
 import TokenModel from '../models/token.model';
+import { generateToken, verifyToken } from '../helpers/token';
 import { ITokenModel, ITokens } from './../interfaces/token.interface';
 import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } from '../constants/env';
+import { JwtPayload } from 'jsonwebtoken';
 
 // User registers/logs in, then token pair is generated and refresh token is saved to the db
 class TokenService {
   generateTokens(payload: UserDto): ITokens {
-    const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET!, {
-      expiresIn: '30m',
-    });
-
-    const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET!, {
-      expiresIn: '30d',
-    });
+    const accessToken = generateToken(payload, JWT_ACCESS_SECRET!, '30m');
+    const refreshToken = generateToken(payload, JWT_REFRESH_SECRET!, '30d');
 
     return {
       accessToken,
@@ -35,6 +30,34 @@ class TokenService {
     const token = await TokenModel.create({ user: userId, refreshToken });
 
     return token;
+  }
+
+  async removeToken(refreshToken: string) {
+    await TokenModel.deleteOne({ refreshToken });
+  }
+
+  async findToken(refreshToken: string) {
+    const tokenData = await TokenModel.findOne({ refreshToken });
+
+    return tokenData;
+  }
+
+  validateAccessToken(accessToken: string) {
+    try {
+      const userData = verifyToken(accessToken, JWT_ACCESS_SECRET!);
+      return userData;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  validateRefreshToken(refreshToken: string) {
+    try {
+      const userData = verifyToken(refreshToken, JWT_REFRESH_SECRET!);
+      return userData;
+    } catch (e) {
+        return null
+    }
   }
 }
 

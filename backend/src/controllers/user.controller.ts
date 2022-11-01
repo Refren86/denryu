@@ -35,6 +35,20 @@ class UserController {
 
   async login(req: Request, res: Response, next: NextFunction) {
     try {
+      const { email, password } = req.body as {
+        email: string;
+        password: string;
+      };
+
+      const userData = await userService.login(email, password);
+
+      // refresh tok. will live inside cookies for 30 days; http only - to restrict editing cookies from client side (for https - add flag "secure")
+      res.cookie('refreshToken', userData.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      });
+
+      return res.status(201).json(userData);
     } catch (e) {
       next(e);
     }
@@ -42,6 +56,11 @@ class UserController {
 
   async logout(req: Request, res: Response, next: NextFunction) {
     try {
+      const { refreshToken } = req.cookies as { refreshToken: string };
+      await userService.logout(refreshToken);
+
+      res.clearCookie('refreshToken'); // clearing cookie from response headers
+      return res.json({ message: 'Refresh token was successfully deleted' });
     } catch (e) {
       next(e);
     }
@@ -61,6 +80,17 @@ class UserController {
 
   async refresh(req: Request, res: Response, next: NextFunction) {
     try {
+      const { refreshToken } = req.cookies as { refreshToken: string };
+
+      const userData = await userService.refresh(refreshToken);
+
+      // refresh tok. will live inside cookies for 30 days; http only - to restrict editing cookies from client side (for https - add flag "secure")
+      res.cookie('refreshToken', userData.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      });
+
+      return res.status(201).json(userData);
     } catch (e) {
       next(e);
     }
@@ -68,7 +98,8 @@ class UserController {
 
   async getUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      res.json(['123', '456']);
+      const users = await userService.getAllUsers();
+      return res.json(users);
     } catch (e) {
       next(e);
     }

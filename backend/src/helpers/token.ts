@@ -1,13 +1,23 @@
 import jwt from 'jsonwebtoken';
 
-export const generateToken = (id: string) => {
+import UserDto from '../dtos/user.dto';
+
+const generateToken = (payload: UserDto, secretKey: string, expiresIn: string) => {
   return jwt.sign(
+    payload,
+    secretKey, // secret key
     {
-      _id: id, // payload
-    },
-    `${process.env.SECRET}`, // secret key
-    {
-      expiresIn: '7d', // how long will be valid
+      expiresIn, // how long will be valid
     }
   );
 };
+
+const verifyToken = (token: string, secretKey: string) => {
+  const userData = jwt.verify(token, secretKey);
+  return userData as UserDto;
+}
+
+export {
+  generateToken,
+  verifyToken,
+}

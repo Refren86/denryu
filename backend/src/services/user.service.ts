@@ -9,6 +9,7 @@ import { API_URL } from '../constants/env';
 import { emailService } from './email.service';
 import { tokenService } from './token.service';
 import { IUser, IUserRegisterForm } from '../interfaces/user.interface';
+import { DeleteResult } from 'mongodb';
 
 class UserService {
   async register(
@@ -54,16 +55,86 @@ class UserService {
     };
   }
 
-  async activate(activationLink: string) {
+  async activate(activationLink: string): Promise<void> {
     const user = await UserModel.findOne({ activationLink });
 
     // if user with specified activation link doesn't exist
     if (!user) {
-      throw ApiError.BadRequest('Incorrect activation link')
+      throw ApiError.BadRequest('Incorrect activation link');
     }
 
     user.isActivated = true;
     await user.save(); // now user is activated and email is checked
+  }
+
+  async login(
+    email: string,
+    password: string
+  ): Promise<ITokens & { user: UserDto }> {
+    const existingUser = await UserModel.findOne({ email });
+
+    if (!existingUser) {
+      throw ApiError.BadRequest('Incorrect login/password');
+    }
+
+    const isPassEqual = await bcrypt.compare(
+      password,
+      existingUser.passwordHash
+    );
+
+    if (!isPassEqual) {
+      throw ApiError.BadRequest('Incorrect login/password');
+    }
+
+    const userDto = new UserDto(existingUser);
+    const tokens = tokenService.generateTokens({ ...userDto });
+
+    await tokenService.saveToken(userDto.id, tokens.refreshToken); // saving refresh token in db
+
+    return {
+      ...tokens,
+      user: userDto,
+    };
+  }
+
+  async logout(refreshToken: string): Promise<void> {
+    // delete token from DB
+    await tokenService.removeToken(refreshToken);
+  }
+
+  async refresh(refreshToken: string): Promise<ITokens & { user: UserDto }> {
+    if (!refreshToken) {
+      throw ApiError.UnauthorizedError();
+    }
+
+    // validate and find token in DB
+    const userData = tokenService.validateRefreshToken(refreshToken); // id, email, isActivated
+    const tokenFromDB = await tokenService.findToken(refreshToken);
+
+    if (!userData || !tokenFromDB) {
+      throw ApiError.UnauthorizedError();
+    }
+
+    const user = await UserModel.findById(userData.id);
+
+    if (!user) {
+      throw ApiError.BadRequest(`User with ID ${userData.id} doesn't exist`);
+    }
+
+    const userDto = new UserDto(user);
+    const tokens = tokenService.generateTokens({ ...userDto });
+
+    await tokenService.saveToken(userDto.id, tokens.refreshToken); // saving refresh token in db
+
+    return {
+      ...tokens,
+      user: userDto,
+    };
+  }
+
+  async getAllUsers(): Promise<IUser[]> {
+    const users = UserModel.find();
+    return users;
   }
 }
 
