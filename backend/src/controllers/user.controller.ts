@@ -6,25 +6,32 @@ import { CLIENT_URL } from '../constants/env';
 import { userService } from '../services/user.service';
 import { IUserRegisterForm } from '../interfaces/user.interface';
 
-interface IRegisterBody {
-  credentials: IUserRegisterForm;
-}
-
 class UserController {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
       const errors = validationResult(req); // body will be extracted automatically from request
 
       if (!errors.isEmpty()) {
-        return next(ApiError.BadRequest('Registration form validation error', errors.array()));
+        return next(
+          ApiError.BadRequest(
+            'Registration form validation error',
+            errors.array()
+          )
+        );
       }
 
-      const { credentials } = req.body as IRegisterBody;
-      const userData = await userService.register(credentials);
+      const { email, password, username } = req.body as IUserRegisterForm;
+      const userData = await userService.register({
+        email,
+        password,
+        username,
+      });
       // refresh tok. will live inside cookies for 30 days; http only - to restrict editing cookies from client side (for https - add flag "secure")
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        sameSite: 'none',
+        secure: true,
       });
 
       return res.status(201).json(userData);
@@ -35,10 +42,11 @@ class UserController {
 
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password } = req.body as {
+      const credentials = req.body as {
         email: string;
         password: string;
       };
+      const { email, password } = credentials;
 
       const userData = await userService.login(email, password);
 
@@ -46,9 +54,11 @@ class UserController {
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        sameSite: 'none',
+        secure: true
       });
 
-      return res.status(201).json(userData);
+      return res.json(userData);
     } catch (e) {
       next(e);
     }
@@ -88,9 +98,11 @@ class UserController {
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        sameSite: 'none',
+        secure: true,
       });
 
-      return res.status(201).json(userData);
+      return res.json(userData);
     } catch (e) {
       next(e);
     }

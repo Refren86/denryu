@@ -3,13 +3,12 @@ import TokenModel from '../models/token.model';
 import { generateToken, verifyToken } from '../helpers/token';
 import { ITokenModel, ITokens } from './../interfaces/token.interface';
 import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } from '../constants/env';
-import { JwtPayload } from 'jsonwebtoken';
 
 // User registers/logs in, then token pair is generated and refresh token is saved to the db
 class TokenService {
   generateTokens(payload: UserDto): ITokens {
-    const accessToken = generateToken(payload, JWT_ACCESS_SECRET!, '30m');
-    const refreshToken = generateToken(payload, JWT_REFRESH_SECRET!, '30d');
+    const accessToken = generateToken(payload, JWT_ACCESS_SECRET!, '15s');
+    const refreshToken = generateToken(payload, JWT_REFRESH_SECRET!, '30s');
 
     return {
       accessToken,

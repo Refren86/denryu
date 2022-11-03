@@ -22,7 +22,7 @@ export const LogInForm = () => {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<Inputs>({
-    mode: 'onBlur',
+    mode: 'onChange',
     resolver: joiResolver(LoginValidator),
   });
 

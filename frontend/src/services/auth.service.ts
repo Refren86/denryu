@@ -1,11 +1,14 @@
 import { AxiosRes, axiosService } from './axios.service';
 
 import { ITokens } from '../types/Token';
-import { UserDto, UserRegisterForm } from '../types/User';
-import { dynamicEndpoints, endpoints } from '../config/urls';
+import { UserDto } from '../types/User';
+import { baseURL, dynamicEndpoints, endpoints } from '../config/urls';
+import axios from 'axios';
 
 export type RegistrationCredentials = {
-  credentials: UserRegisterForm;
+  email: string;
+  username: string;
+  password: string;
 };
 
 export type LoginCredentials = {
@@ -35,7 +38,9 @@ export const authService = {
       .get(dynamicEndpoints.activate(link))
       .then((response) => response),
   refresh: (): AxiosRes<ITokens & { user: UserDto }> =>
-    axiosService
-      .get<ITokens & { user: UserDto }>(endpoints.refresh)
+    axios
+      .get<ITokens & { user: UserDto }>(`${baseURL}${endpoints.refresh}`, {
+        withCredentials: true,
+      })
       .then((response) => response),
 };

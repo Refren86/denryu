@@ -8,8 +8,8 @@ const router = Router();
 
 router.post(
   '/register',
-  body('credentials.email').isEmail(),
-  body('credentials.password').isLength({ min: 3, max: 32 }),
+  body('email').isEmail(),
+  body('password').isLength({ min: 3, max: 32 }),
   userController.register
 );
 router.post('/login', userController.login);

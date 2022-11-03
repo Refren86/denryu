@@ -9,13 +9,13 @@ import { API_URL } from '../constants/env';
 import { emailService } from './email.service';
 import { tokenService } from './token.service';
 import { IUser, IUserRegisterForm } from '../interfaces/user.interface';
-import { DeleteResult } from 'mongodb';
 
 class UserService {
-  async register(
-    credentials: IUserRegisterForm
-  ): Promise<ITokens & { user: UserDto }> {
-    const { email, name, password, phone, surname, username } = credentials;
+  async register({
+    email,
+    password,
+    username,
+  }: IUserRegisterForm): Promise<ITokens & { user: UserDto }> {
     const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
@@ -27,11 +27,10 @@ class UserService {
 
     const activationLink = randomString(); // link for email to activate account
 
-    const newUser = await UserModel.create<IUser>({
-      name,
-      surname,
+    const newUser = await UserModel.create<Partial<IUser>>({
+      name: 'John',
+      surname: 'Doe',
       email,
-      phone,
       username,
       passwordHash: secretPassword,
       activationLink,

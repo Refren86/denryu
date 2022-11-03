@@ -5,6 +5,8 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { FormInput } from '../ui/FormInput';
 import { RegistrationValidator } from '../../utils/validators/registration.validator';
 import { AuthModalContext } from '../../store/context/AuthModalContext';
+import { useAppDispatch } from '../../hooks/redux';
+import { signUp } from '../../store/redux/slices/auth.slice';
 
 type Inputs = {
   email: string;
@@ -14,6 +16,7 @@ type Inputs = {
 };
 
 export const SignUpForm = () => {
+  const dispatch = useAppDispatch();
   const { handleLogInModalSwitch } = useContext(AuthModalContext);
 
   const {
@@ -21,13 +24,17 @@ export const SignUpForm = () => {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<Inputs>({
-    mode: 'onBlur',
+    mode: 'onChange',
     resolver: joiResolver(RegistrationValidator),
   });
 
   const submitHandler: SubmitHandler<Inputs> = (data: Inputs) => {
     console.log(data);
     if (!isValid) return;
+
+    const { repeatPassword, ...registrationData } = data;
+
+    dispatch(signUp(registrationData));
   };
 
   return (

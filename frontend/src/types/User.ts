@@ -10,15 +10,6 @@ export type User = {
   friends: User[];
 }
 
-export type UserRegisterForm = {
-  name: string;
-  surname: string;
-  email: string;
-  username: string;
-  phone: string;
-  password: string;
-};
-
 export type UserDto = {
   email: string;
   id: string;

@@ -9,15 +9,12 @@ export interface IUser {
   bio?: string;
   image?: string;
   friends?: IUser[];
-  isActivated?: boolean;
+  isActivated: boolean;
   activationLink?: string;
 }
 
 export interface IUserRegisterForm {
-  name: string;
-  surname: string;
   email: string;
   username: string;
-  phone: string;
   password: string;
 }
