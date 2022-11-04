@@ -38,7 +38,6 @@ export const signUp = createAsyncThunk<
 
       return data;
     } catch (err: any) {
-      console.log(err);
       let error: AxiosError<ValidationErrors> = err; // cast the error for access
 
       if (!error.response) {
@@ -59,7 +58,6 @@ export const login = createAsyncThunk<
     const { data } = await authService.login(credentials);
     return data;
   } catch (err: any) {
-    console.log(err);
     let error: AxiosError<ValidationErrors> = err; // cast the error for access
 
     if (!error.response) {
@@ -79,7 +77,6 @@ export const logout = createAsyncThunk<
     const { data } = await authService.logout();
     return data;
   } catch (err: any) {
-    console.log(err);
     let error: AxiosError<ValidationErrors> = err; // cast the error for access
 
     if (!error.response) {

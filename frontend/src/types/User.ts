@@ -12,6 +12,7 @@ export type User = {
 
 export type UserDto = {
   email: string;
+  username: string;
   id: string;
   isActivated: boolean;
 };

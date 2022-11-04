@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
@@ -7,6 +8,7 @@ import { AuthModalContext } from '../../store/context/AuthModalContext';
 import { useAppDispatch } from '../../hooks/redux';
 import { LoginValidator } from '../../utils/validators/login.validator';
 import { login } from '../../store/redux/slices/auth.slice';
+
 
 type Inputs = {
   email: string;
@@ -17,6 +19,8 @@ export const LogInForm = () => {
   const dispatch = useAppDispatch();
   const { handleSignUpModalSwitch } = useContext(AuthModalContext);
 
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -26,11 +30,14 @@ export const LogInForm = () => {
     resolver: joiResolver(LoginValidator),
   });
 
-  const submitHandler: SubmitHandler<Inputs> = (data: Inputs) => {
-    console.log(data);
+  const submitHandler: SubmitHandler<Inputs> = async (data: Inputs) => {
     if (!isValid) return;
+    const { payload } = await dispatch(login(data));
 
-    dispatch(login(data));
+    if (payload) {
+      // @ts-ignore
+      navigate(`/profile/${payload?.user?.username}`);
+    }
   };
 
   return (

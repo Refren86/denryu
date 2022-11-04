@@ -26,18 +26,29 @@ axiosService.interceptors.response.use(
     const initialRequest = error.config;
 
     // if unauthorized - send request to refresh token and save in local storage
-    if (error.response.status === 401 && initialRequest && !error.config._isRetry) {
+    if (
+      error.response.status === 401 &&
+      initialRequest &&
+      !error.config._isRetry
+    ) {
       try {
-        const response = await authService.refresh();
-        localStorage.setItem('token', response.data.accessToken);
+        const { data } = await authService.refresh();
 
-        return axiosService.request(initialRequest); // triggering initial request one more time
+        if (data?.accessToken) {
+          localStorage.setItem('token', data.accessToken);
+          initialRequest.headers = {
+            ...initialRequest.headers,
+            Authorization: `Bearer ${data.accessToken}`,
+          };
+        }
+
+        return axios(initialRequest); // triggering initial request one more time
       } catch (err) {
-        console.log('401 - UNAUTHORIZED');
+        localStorage.removeItem('token');
       }
     }
 
-    throw error; // if statement wasn't triggered (error code is not 401)
+    return Promise.reject(error); // if statement wasn't triggered (error code is not 401)
   }
 );
 

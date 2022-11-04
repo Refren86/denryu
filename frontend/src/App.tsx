@@ -3,9 +3,10 @@ import { Routes, Route } from 'react-router-dom';
 
 import { Test } from './components/Test/Test';
 import { useAppDispatch } from './hooks/redux';
-import { HomePage } from './routes/HomePage/HomePage';
+import { HomePage } from './pages/HomePage/HomePage';
 import { checkAuth } from './store/redux/slices/auth.slice';
 import AuthModalContextProvider from './store/context/AuthModalContext';
+import { RequireAuth } from './hoc/RequireAuth';
 
 const App = () => {
   const dispatch = useAppDispatch();
@@ -27,6 +28,10 @@ const App = () => {
           </AuthModalContextProvider>
         }
       />
+
+      <Route element={<RequireAuth />}>
+        <Route path='/profile/:username' />
+      </Route>
       <Route path="/test" element={<Test />} />
     </Routes>
   );

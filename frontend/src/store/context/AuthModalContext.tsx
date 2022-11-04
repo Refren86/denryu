@@ -1,14 +1,13 @@
 import { createContext, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { ChildrenType } from '../../types/Common';
 
 export type AuthModalContextType = {
   isSignUpModalOpen: boolean;
   isLogInModalOpen: boolean;
-  openSignUpModal: () => void;
-  closeSignUpModal: () => void;
-  openLogInModal: () => void;
-  closeLogInModal: () => void;
+  openAuthModal: (type: 'login' | 'signup') => void;
+  closeAuthModal: (type: 'login' | 'signup') => void;
   handleLogInModalSwitch: () => void;
   handleSignUpModalSwitch: () => void;
 };
@@ -16,51 +15,45 @@ export type AuthModalContextType = {
 export const AuthModalContext = createContext<AuthModalContextType>({
   isSignUpModalOpen: false,
   isLogInModalOpen: false,
-  openSignUpModal: () => {},
-  closeSignUpModal: () => {},
-  openLogInModal: () => {},
-  closeLogInModal: () => {},
+  openAuthModal: () => {},
+  closeAuthModal: () => {},
   handleLogInModalSwitch: () => {},
   handleSignUpModalSwitch: () => {},
 });
 
 const AuthModalContextProvider = ({ children }: ChildrenType) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);
   const [isLogInModalOpen, setLogInModalOpen] = useState(false);
 
-  const openSignUpModal = () => {
-    setSignUpModalOpen(true);
+  const openAuthModal = (type: 'login' | 'signup') => {
+    type === 'login' ? setLogInModalOpen(true) : setSignUpModalOpen(true);
   };
 
-  const closeSignUpModal = () => {
-    setSignUpModalOpen(false);
-  };
+  const closeAuthModal = (type: 'login' | 'signup') => {
+    type === 'login' ? setLogInModalOpen(false) : setSignUpModalOpen(false);
 
-  const openLogInModal = () => {
-    setLogInModalOpen(true);
-  };
-
-  const closeLogInModal = () => {
-    setLogInModalOpen(false);
+    if (searchParams.has('expSession')) {
+      searchParams.delete('expSession');
+      setSearchParams(searchParams);
+    }
   };
 
   const handleLogInModalSwitch = () => {
-    closeSignUpModal();
-    openLogInModal();
-  }
+    closeAuthModal('signup');
+    openAuthModal('login');
+  };
 
   const handleSignUpModalSwitch = () => {
-    closeLogInModal();
-    openSignUpModal();
-  }
+    closeAuthModal('login');
+    openAuthModal('signup');
+  };
 
   const value = {
     isSignUpModalOpen,
     isLogInModalOpen,
-    openSignUpModal,
-    closeSignUpModal,
-    openLogInModal,
-    closeLogInModal,
+    openAuthModal,
+    closeAuthModal,
     handleLogInModalSwitch,
     handleSignUpModalSwitch,
   };
