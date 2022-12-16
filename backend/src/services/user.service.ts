@@ -7,6 +7,7 @@ import UserModel from '../models/user.model';
 import ApiError from '../exceptions/api.error';
 import { API_URL } from '../constants/env';
 import { emailService } from './email.service';
+import { emailActions } from '../config/email-action.enum';
 import { tokenService } from './token.service';
 import { IUser, IUserRegisterForm } from '../interfaces/user.interface';
 
@@ -39,7 +40,8 @@ class UserService {
     // users clicks on randomly generated endpoint and his account is being activated
     await emailService.sendActivationMail(
       email,
-      `${API_URL}/api/activate/${activationLink}`
+      `${API_URL}/api/activate/${activationLink}`,
+      emailActions.WELCOME
     );
 
     // using Dto we're getting rid of unnecessary fields

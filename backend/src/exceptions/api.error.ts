@@ -16,4 +16,8 @@ export default class ApiError extends Error {
   static BadRequest(message: string, errors: any[] = []) {
     return new ApiError(403, message, errors);
   }
+
+  static WrongTemplate() {
+    return new ApiError(500, 'Wrong template')
+  }
 }

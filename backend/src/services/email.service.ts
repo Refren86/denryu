@@ -1,60 +1,52 @@
+import path from 'path';
 import nodemailer from 'nodemailer';
-import { google } from 'googleapis';
+import EmailTemplates from 'email-templates';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+// @ts-ignore
+import emailTemplates from '../email-templates';
+import { ITemplateInfo } from '../interfaces/email.interface';
 
-import {
-  API_URL,
-  OAUTH_CLIENT_ID,
-  OAUTH_CLIENT_SECRET,
-  OAUTH_REDIRECT_URL,
-  OAUTH_REFRESH_TOKEN,
-  OAUTH_SERVICE,
-  OAUTH_MAIL,
-} from '../constants/env';
-
-const OAuth2 = google.auth.OAuth2;
-
-const oauth2Client = new OAuth2(
-  OAUTH_CLIENT_ID, // Client Id
-  OAUTH_CLIENT_SECRET, // Client Secret
-  OAUTH_REDIRECT_URL // Redirect URL
-);
-
-oauth2Client.setCredentials({
-  refresh_token: OAUTH_REFRESH_TOKEN,
-});
-
-const accessToken = oauth2Client.getAccessToken().then(res => res.token);
+import { OAUTH_SERVICE, OAUTH_MAIL, OAUTH_PASSWORD } from '../constants/env';
+import ApiError from '../exceptions/api.error';
 
 class EmailService {
   private transporter: nodemailer.Transporter;
+  private templateRenderer;
+  private templateInfo: ITemplateInfo;
+  private html: string;
 
   constructor() {
     this.transporter = nodemailer.createTransport({
       service: OAUTH_SERVICE,
       auth: {
-        type: 'OAuth2',
         user: OAUTH_MAIL,
-        clientId: OAUTH_CLIENT_ID,
-        clientSecret: OAUTH_CLIENT_SECRET,
-        refreshToken: OAUTH_REFRESH_TOKEN,
-        accessToken: String(accessToken),
+        pass: OAUTH_PASSWORD,
       },
-      tls: {
-        rejectUnauthorized: false,
+    } as SMTPTransport.Options);
+
+    this.templateRenderer = new EmailTemplates({
+      views: {
+        root: path.join(process.cwd(), 'src', 'email-templates'),
       },
     });
   }
 
-  async sendActivationMail(to: string, link: string) {
+  async sendActivationMail(to: string, link: string, emailAction: any) {
+    this.templateInfo = emailTemplates[emailAction];
+
+    if (!this.templateInfo) {
+      throw ApiError.WrongTemplate();
+    }
+
+    this.html = await this.templateRenderer.render(
+      this.templateInfo.templateName
+    ); // renders pug file
+
     await this.transporter.sendMail({
       from: OAUTH_MAIL,
       to, // 'email1@gmail.com, email2@gmail.com, email3@gmail.com'
-      subject: `Account activation on ${API_URL}`,
-      html: `
-      <div>
-          <h1>For activation, follow the link:</h1>
-          <a href="${link}">${link}</a>
-      </div>`,
+      subject: this.templateInfo.subject,
+      html: this.html,
     });
   }
 }

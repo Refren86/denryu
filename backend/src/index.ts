@@ -29,7 +29,6 @@ const start = async () => {
       useUnifiedTopology: true,
     } as ConnectOptions);
     console.log('Database connected!');
-
     app.listen(PORT, () => console.log('Started on port ' + PORT));
   } catch (e) {
     console.log(e);

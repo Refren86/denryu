@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Modal } from '..';
 import { LogInForm } from '../LogInForm/LogInForm';
 import { AuthModalContext } from '../../store/context/AuthModalContext';
+import DenryuLogo from '../../assets/svgs/logo.svg';
 
 export const Navbar = () => {
   const { isLogInModalOpen, openAuthModal, closeAuthModal } = useContext(AuthModalContext);
@@ -11,8 +12,8 @@ export const Navbar = () => {
   return (
     <nav className="shadow-sm relative">
       <div className="flex items-center justify-between absolute h-12 px-5 w-full mt-3">
-        <Link to="/" className="font-bold text-amber-400 text-lg">
-          Denryu
+        <Link to="/">
+          <img src={DenryuLogo} width={64} height={64} />
         </Link>
 
         <div className="flex gap-2">
