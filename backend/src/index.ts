@@ -5,7 +5,7 @@ import mongoose, { ConnectOptions } from 'mongoose';
 
 import apiRoutes from './routes/api.routes';
 import errorMiddleware from './middlewares/error.middleware';
-import { PORT, MONGODB_URL, CLIENT_URL } from './constants/env';
+import { PORT, MONGODB_URL, CLIENT_URL, API_URL } from './constants/env';
 
 const app = express();
 
@@ -29,7 +29,7 @@ const start = async () => {
       useUnifiedTopology: true,
     } as ConnectOptions);
     console.log('Database connected!');
-    app.listen(PORT, () => console.log('Started on port ' + PORT));
+    app.listen(PORT, () => console.log('Started on', API_URL));
   } catch (e) {
     console.log(e);
   }

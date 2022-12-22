@@ -38,10 +38,10 @@ class UserService {
     });
 
     // users clicks on randomly generated endpoint and his account is being activated
-    await emailService.sendActivationMail(
+    await emailService.sendEmail(
       email,
-      `${API_URL}/api/activate/${activationLink}`,
-      emailActions.WELCOME
+      { link: `${API_URL}/api/activate/${activationLink}` },
+      emailActions.EMAIL_ACTIVATION
     );
 
     // using Dto we're getting rid of unnecessary fields

@@ -82,7 +82,7 @@ class UserController {
       await userService.activate(activationLink);
 
       // redirect on frontend page
-      return res.redirect(CLIENT_URL!);
+      return res.redirect(`${CLIENT_URL}?activated=true`);
     } catch (e) {
       next(e);
     }

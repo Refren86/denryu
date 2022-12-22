@@ -1,10 +1,9 @@
-// @ts-ignore
-import { emailActions } from '../config/email-action.enum';
 import { API_URL } from '../constants/env';
+import { emailActions } from '../config/email-action.enum';
 
 const { FORGOT_PASS, WELCOME, EMAIL_ACTIVATION } = emailActions;
 
-const emailsContent = {
+const emailTemplates = {
   [WELCOME]: {
     subject: 'Welcome on board!',
     templateName: 'welcome', // name of pug file
@@ -15,8 +14,8 @@ const emailsContent = {
   },
   [EMAIL_ACTIVATION]: {
     subject: `Account activation on ${API_URL}`,
-    templateName: ''
+    templateName: 'email-activation', // name of pug file
   },
 };
 
-export { emailsContent };
+export { emailTemplates };

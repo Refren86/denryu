@@ -2,12 +2,11 @@ import path from 'path';
 import nodemailer from 'nodemailer';
 import EmailTemplates from 'email-templates';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-// @ts-ignore
-import emailTemplates from '../email-templates';
-import { ITemplateInfo } from '../interfaces/email.interface';
 
-import { OAUTH_SERVICE, OAUTH_MAIL, OAUTH_PASSWORD } from '../constants/env';
 import ApiError from '../exceptions/api.error';
+import { emailTemplates } from '../email-templates';
+import { ITemplateInfo } from '../interfaces/email.interface';
+import { OAUTH_SERVICE, OAUTH_MAIL, OAUTH_PASSWORD } from '../constants/env';
 
 class EmailService {
   private transporter: nodemailer.Transporter;
@@ -31,16 +30,23 @@ class EmailService {
     });
   }
 
-  async sendActivationMail(to: string, link: string, emailAction: any) {
-    this.templateInfo = emailTemplates[emailAction];
+  // locals - object with variables for pug
+  async sendEmail(
+    to: string,
+    locals: Record<string, string> = {},
+    emailAction: string
+  ) {
+    this.templateInfo = emailTemplates[emailAction]; // emailAction: WELCOME / FORGOT_PASS / EMAIL_ACTIVATION...
 
     if (!this.templateInfo) {
       throw ApiError.WrongTemplate();
     }
 
+    // renders pug file (1st - pug file name, 2nd - variable for pug)
     this.html = await this.templateRenderer.render(
-      this.templateInfo.templateName
-    ); // renders pug file
+      this.templateInfo.templateName,
+      locals
+    );
 
     await this.transporter.sendMail({
       from: OAUTH_MAIL,
