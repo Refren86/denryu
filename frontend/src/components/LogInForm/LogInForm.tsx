@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
+import { Loader } from '../ui/Loader';
 import { FormInput } from '../ui/FormInput';
 import { AuthModalContext } from '../../store/context/AuthModalContext';
-import { useAppDispatch } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { LoginValidator } from '../../utils/validators/login.validator';
 import { login } from '../../store/redux/slices/auth.slice';
+import { Button } from '../ui/Button';
 
 
 type Inputs = {
@@ -17,6 +19,8 @@ type Inputs = {
 
 export const LogInForm = () => {
   const dispatch = useAppDispatch();
+  const { status: loginStatus } = useAppSelector(({ auth }) => auth);
+
   const { handleSignUpModalSwitch } = useContext(AuthModalContext);
 
   const navigate = useNavigate();
@@ -26,7 +30,7 @@ export const LogInForm = () => {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<Inputs>({
-    mode: 'onChange',
+    mode: 'onTouched',
     resolver: joiResolver(LoginValidator),
   });
 
@@ -34,8 +38,7 @@ export const LogInForm = () => {
     if (!isValid) return;
     const { payload } = await dispatch(login(data));
 
-    if (payload) {
-      // @ts-ignore
+    if ('user' in payload!) {
       navigate(`/profile/${payload?.user?.username}`);
     }
   };
@@ -51,6 +54,7 @@ export const LogInForm = () => {
         error={errors.email}
         required
       />
+      
       <FormInput
         id="password"
         type="password"
@@ -72,9 +76,9 @@ export const LogInForm = () => {
       </p>
 
       <div className="flex justify-center">
-        <button className="primary-button w-[30%]" disabled={!isValid}>
-          Log In
-        </button>
+        <Button disabled={!isValid}>
+          {loginStatus === 'loading' ? <Loader /> : "Log In"}
+        </Button>
       </div>
     </form>
   );

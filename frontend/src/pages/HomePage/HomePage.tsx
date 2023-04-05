@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { SignUpForm, Layout, Modal } from '../../components';
+import { SignUpForm, Layout, Modal, Button, BUTTON_TYPES } from '../../components';
 import { AuthModalContext } from '../../store/context/AuthModalContext';
 
 export const HomePage = () => {
@@ -22,9 +22,9 @@ export const HomePage = () => {
             More than just a messanger
           </h1>
 
-          <button className="secondary-button" onClick={() => openAuthModal('signup')}>
+          <Button btnType={BUTTON_TYPES.SECONDARY} onClick={() => openAuthModal('signup')}>
             Sign Up
-          </button>
+          </Button>
         </div>
 
         <Modal

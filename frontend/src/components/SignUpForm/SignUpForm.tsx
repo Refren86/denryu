@@ -7,6 +7,7 @@ import { RegistrationValidator } from '../../utils/validators/registration.valid
 import { AuthModalContext } from '../../store/context/AuthModalContext';
 import { useAppDispatch } from '../../hooks/redux';
 import { signUp } from '../../store/redux/slices/auth.slice';
+import { Button } from '../ui/Button';
 
 type Inputs = {
   email: string;
@@ -24,7 +25,7 @@ export const SignUpForm = () => {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<Inputs>({
-    mode: 'onChange',
+    mode: 'onTouched',
     resolver: joiResolver(RegistrationValidator),
   });
 
@@ -87,9 +88,9 @@ export const SignUpForm = () => {
       </p>
 
       <div className="flex justify-center">
-        <button className="primary-button w-[30%]" disabled={!isValid}>
+        <Button disabled={!isValid}>
           Register
-        </button>
+        </Button>
       </div>
     </form>
   );

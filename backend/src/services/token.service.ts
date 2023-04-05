@@ -7,8 +7,8 @@ import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } from '../constants/env';
 // User registers/logs in, then token pair is generated and refresh token is saved to the db
 class TokenService {
   generateTokens(payload: UserDto): ITokens {
-    const accessToken = generateToken(payload, JWT_ACCESS_SECRET!, '15s');
-    const refreshToken = generateToken(payload, JWT_REFRESH_SECRET!, '30s');
+    const accessToken = generateToken(payload, JWT_ACCESS_SECRET!, '15m');
+    const refreshToken = generateToken(payload, JWT_REFRESH_SECRET!, '7d');
 
     return {
       accessToken,

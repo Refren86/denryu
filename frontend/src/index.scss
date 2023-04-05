@@ -19,18 +19,6 @@ a {
   text-decoration: none;
 }
 
-.primary-button {
-  @apply rounded-md inline-block bg-amber-400 py-2 px-4 shadow outline-none hover:bg-amber-500 active:bg-amber-600 text-white disabled:bg-amber-200 transition duration-150 ease-in-out;
-}
-
-.secondary-button {
-  @apply rounded-md inline-block bg-violet-500 py-2 px-4 shadow outline-none hover:bg-violet-600 active:bg-violet-700 text-white disabled:bg-violet-300 transition duration-150 ease-in-out;
-}
-
-.outlined-button {
-  @apply rounded-md inline-block bg-transparent py-2 px-4 shadow outline-none border border-amber-400 hover:border-amber-500 active:border-amber-600 text-amber-400 hover:text-amber-500 active:text-amber-600;
-}
-
 .overlay {
   width: 100vw;
   height: 100vh;
@@ -47,4 +35,12 @@ button {
   &:disabled {
     cursor: url('./assets/svgs/disabled-sign.svg'), auto;
   }
+}
+
+// removes autofill default color
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
 }

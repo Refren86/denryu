@@ -1,6 +1,6 @@
 import { ITokens } from './../interfaces/token.interface';
 import bcrypt from 'bcrypt';
-import { v4 as randomString } from 'uuid';
+import { randomUUID } from 'crypto';
 
 import UserDto from '../dtos/user.dto';
 import UserModel from '../models/user.model';
@@ -26,7 +26,7 @@ class UserService {
     const salt = await bcrypt.genSalt(10);
     const secretPassword = await bcrypt.hash(password, salt); // hashing password
 
-    const activationLink = randomString(); // link for email to activate account
+    const activationLink = randomUUID(); // link for email to activate account
 
     const newUser = await UserModel.create<Partial<IUser>>({
       name: 'John',
