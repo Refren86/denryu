@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-import { useAppDispatch } from '../../hooks/redux';
 import { logout } from '../../store/redux/slices/auth.slice';
+import { useSessionStorage } from '../../hooks/useSessionStorage';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { ReactComponent as LogoIcon } from '../../assets/svgs/logo.svg';
 import { ReactComponent as CaretRight } from '../../assets/svgs/caret-right.svg';
 import { ReactComponent as UserIcon } from '../../assets/svgs/user.svg';
@@ -12,15 +12,19 @@ import { ReactComponent as LogoutIcon } from '../../assets/svgs/logout.svg';
 
 export const Sidebar = () => {
   const dispatch = useAppDispatch();
-  const location = useLocation();
+  const { user } = useAppSelector(({ auth }) => auth);
 
-  const [open, setOpen] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [sidebarOpen, setSidebarOpen] = useSessionStorage('sidebarOpen', true);
 
   const menus = [
     {
       title: 'My Page',
       icon: <UserIcon className="min-w-[24px] w-[24px]" />,
       path: '/profile',
+      onClick: () => goTo(`/profile/${user?.username}`),
     },
     {
       title: 'Friends',
@@ -31,6 +35,7 @@ export const Sidebar = () => {
       title: 'Setting',
       icon: <SettingsIcon className="min-w-[24px] w-[24px]" />,
       path: '/settings',
+      onClick: () => goTo('/settings'),
     },
     {
       title: 'Logout',
@@ -39,30 +44,34 @@ export const Sidebar = () => {
     },
   ];
 
+  function goTo(path: string) {
+    navigate(path);
+  }
+
   return (
-    <div
+    <aside
       className={`${
-        open ? 'w-72' : 'w-16'
-      } bg-light-blue h-screen px-3 pt-8 relative duration-300`}
+        sidebarOpen ? 'w-72' : 'w-16'
+      } bg-black h-screen px-3 pt-8 relative duration-300`}
     >
       <CaretRight
-        onClick={() => setOpen(!open)}
-        className={`absolute h-6 w-6 p-1 cursor-pointer -right-3 top-9 bg-purple rounded-full text-pale-lavender ${
-          open && 'rotate-180'
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className={`absolute h-6 w-6 p-1 cursor-pointer -right-3 top-9 bg-white border border-black rounded-full ${
+          sidebarOpen && 'rotate-180'
         }`}
       />
 
       <div className="flex gap-x-4 items-center">
         <LogoIcon
           className={`cursor-pointer min-w-[40px] duration-500 ${
-            open && 'rotate-[360deg]'
+            sidebarOpen && 'rotate-[360deg]'
           }`}
           width={40}
           height={40}
         />
         <h3
           className={`text-white origin-left font-medium text-xl duration-200 ${
-            !open && 'scale-0'
+            !sidebarOpen && 'scale-0'
           }`}
         >
           Denryu
@@ -73,17 +82,17 @@ export const Sidebar = () => {
           <button
             key={index}
             onClick={menu.onClick}
-            className={`flex rounded-md p-2 w-full hover:bg-light-white text-white text-sm items-center gap-x-4 
-              mt-3 hover:bg-lilac transition-colors duration-200 ${
+            className={`flex rounded-md p-2 w-full text-white text-sm items-center gap-x-4 
+              mt-3 hover:bg-white hover:text-black transition-colors duration-200 ${
                 menu?.path &&
                 location.pathname.includes(menu.path) &&
-                'bg-lilac'
+                'bg-white text-black'
               }`}
           >
             {menu.icon}
             <span
               className={`${
-                !open && 'scale-0'
+                !sidebarOpen && 'scale-0'
               } origin-left duration-200 whitespace-nowrap`}
             >
               {menu.title}
@@ -91,6 +100,6 @@ export const Sidebar = () => {
           </button>
         ))}
       </ul>
-    </div>
+    </aside>
   );
 };

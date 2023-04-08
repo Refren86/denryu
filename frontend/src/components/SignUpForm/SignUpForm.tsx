@@ -25,7 +25,7 @@ export const SignUpForm = () => {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<Inputs>({
-    mode: 'onTouched',
+    mode: 'onChange',
     resolver: joiResolver(RegistrationValidator),
   });
 

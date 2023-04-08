@@ -41,6 +41,10 @@ type TUserDto = {
   email: string;
   username: string;
   id: string;
+  name?: string;
+  surname?: string;
+  phone?: string;
+  bio?: string;
   isActivated: boolean;
 };
 

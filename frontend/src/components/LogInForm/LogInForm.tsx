@@ -30,7 +30,7 @@ export const LogInForm = () => {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<Inputs>({
-    mode: 'onTouched',
+    mode: 'onChange',
     resolver: joiResolver(LoginValidator),
   });
 
