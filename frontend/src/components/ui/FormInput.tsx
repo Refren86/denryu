@@ -36,7 +36,7 @@ export const FormInput: FC<FormInputProps> = ({
       <input
         id={id}
         type={typeState}
-        className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-amber-500"
+        className="peer px-2 h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-amber-500"
         {...register?.(id, { required })}
         {...otherProps}
       />
@@ -44,7 +44,7 @@ export const FormInput: FC<FormInputProps> = ({
       {label && (
         <label
           htmlFor={id}
-          className="absolute pointer-events-none left-0 -top-3.5 text-gray-700 text-xs transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-700 peer-focus:text-xs"
+          className="absolute pointer-events-none left-2 -top-3.5 text-gray-700 text-xs transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-700 peer-focus:text-xs"
         >
           {label}
         </label>

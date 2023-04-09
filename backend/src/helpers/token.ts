@@ -12,7 +12,7 @@ const generateToken = (payload: UserDto, secretKey: string, expiresIn: string) =
   );
 };
 
-const verifyToken = (token: string, secretKey: string) => {
+const verifyToken = (token: string, secretKey: string): UserDto => {
   const userData = jwt.verify(token, secretKey);
   return userData as UserDto;
 }

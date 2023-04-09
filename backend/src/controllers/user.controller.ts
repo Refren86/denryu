@@ -1,10 +1,12 @@
+import { UploadedFile } from 'express-fileupload';
 import { validationResult } from 'express-validator';
 import { NextFunction, Request, Response } from 'express';
 
 import ApiError from '../exceptions/api.error';
 import { CLIENT_URL } from '../constants/env';
 import { userService } from '../services/user.service';
-import { IUserRegisterForm } from '../interfaces/user.interface';
+import { IUser, IUserRegisterForm } from '../interfaces/user.interface';
+import { s3Service } from '../services/s3.service';
 
 class UserController {
   async register(req: Request, res: Response, next: NextFunction) {
@@ -55,7 +57,7 @@ class UserController {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
         sameSite: 'none',
-        secure: true
+        secure: true,
       });
 
       return res.json(userData);
@@ -112,6 +114,40 @@ class UserController {
     try {
       const users = await userService.getAllUsers();
       return res.json(users);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async updateUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.params;
+      const updateData: Partial<IUser> = req.body;
+
+      const updatedUser = await userService.updateUser(userId, updateData);
+      return res.status(201).json(updatedUser);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async uploadUserAvatar(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.params;
+
+      console.log(`req.files >>>`, req.files);
+      
+      const uploadedData = await s3Service.uploadPublicFile(
+        req.files!.avatar as UploadedFile,
+        'users', // folder name
+        userId
+      ); // uploads on S3
+
+      const updatedUser = await userService.updateUser(userId, {
+        image: uploadedData.Location,
+      });
+
+      return res.status(201).json(updatedUser);
     } catch (e) {
       next(e);
     }

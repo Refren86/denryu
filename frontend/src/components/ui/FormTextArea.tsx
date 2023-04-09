@@ -23,7 +23,7 @@ export const FormTextArea: FC<FormInputProps> = ({
     <div className="relative my-6">
       <textarea
         id={id}
-        className="peer w-full border-b-2 border-gray-300 text-gray-900 resize-none placeholder-transparent focus:outline-none focus:border-amber-500"
+        className="peer p-2 w-full border-b-2 border-gray-300 text-gray-900 resize-none placeholder-transparent focus:outline-none focus:border-amber-500"
         {...register?.(id, { required })}
         {...otherProps}
       />
@@ -31,7 +31,7 @@ export const FormTextArea: FC<FormInputProps> = ({
       {label && (
         <label
           htmlFor={id}
-          className="absolute pointer-events-none left-0 -top-4 text-gray-700 text-xs transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-4 peer-focus:text-gray-700 peer-focus:text-xs"
+          className="absolute pointer-events-none left-2 -top-4 text-gray-700 text-xs transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-4 peer-focus:text-gray-700 peer-focus:text-xs"
         >
           {label}
         </label>

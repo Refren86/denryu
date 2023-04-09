@@ -52,7 +52,7 @@ export const Sidebar = () => {
     <aside
       className={`${
         sidebarOpen ? 'w-72' : 'w-16'
-      } bg-black h-screen px-3 pt-8 relative duration-300`}
+      } bg-black min-h-screen px-3 pt-8 relative duration-300`}
     >
       <CaretRight
         onClick={() => setSidebarOpen(!sidebarOpen)}

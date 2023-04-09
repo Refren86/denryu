@@ -1,18 +1,10 @@
-import { IncomingHttpHeaders } from "http";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 
-import UserDto from "../dtos/user.dto";
 import ApiError from "../exceptions/api.error";
 import { tokenService } from "../services/token.service";
+import { ICustomRequest } from "../interfaces/request.interface";
 
-interface CustomRequest extends Request {
-  user?: UserDto;
-  headers: IncomingHttpHeaders & {
-    authorization?: string;
-  }
-}
-
-export default (req: CustomRequest, res: Response, next: NextFunction) => {
+export default (req: ICustomRequest, res: Response, next: NextFunction) => {
   try {
     // extract authorization header from request and get access token
     const authHeader = req.headers?.authorization;

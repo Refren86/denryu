@@ -26,7 +26,7 @@ type TRejectValue = {
 
 // User
 type TUser = {
-  id: number;
+  _id: number;
   name: string;
   surname: string;
   email: string;
@@ -40,7 +40,8 @@ type TUser = {
 type TUserDto = {
   email: string;
   username: string;
-  id: string;
+  _id: string;
+  image?: string;
   name?: string;
   surname?: string;
   phone?: string;

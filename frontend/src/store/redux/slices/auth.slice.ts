@@ -7,6 +7,8 @@ import {
   authService,
   RegistrationCredentials,
 } from '../../../services/auth.service';
+import { userService } from '../../../services/user.service';
+import { UserDto } from '../../../helpers/constructors';
 
 export type AuthState = {
   user: TUserDto | null;
@@ -66,7 +68,7 @@ export const logout = createAsyncThunk<
 >('logout/auth', async (_, { rejectWithValue }) => {
   try {
     const { data } = await authService.logout();
-    
+
     return data;
   } catch (err: any) {
     const error: AxiosError<TErrorRes> = err;
@@ -85,6 +87,40 @@ export const checkAuth = createAsyncThunk<
   try {
     // here we need plain axios without interceptors to check for 401 status (unauthorized)
     const { data } = await authService.refresh(); // will send cookies to server (withCredentials: true)
+    return data;
+  } catch (err: any) {
+    const error: AxiosError<TErrorRes> = err;
+    return rejectWithValue({
+      message: error.response?.data.message!,
+      status: error.response?.status!,
+    });
+  }
+});
+
+export const updateUser = createAsyncThunk<
+  TUserDto,
+  { userId: string; newData: Partial<TUser> },
+  { rejectValue: TRejectValue }
+>('updateUser/auth', async ({ userId, newData }, { rejectWithValue }) => {
+  try {
+    const { data } = await userService.updateUser({ userId, newData });
+    return data;
+  } catch (err: any) {
+    const error: AxiosError<TErrorRes> = err;
+    return rejectWithValue({
+      message: error.response?.data.message!,
+      status: error.response?.status!,
+    });
+  }
+});
+
+export const uploadAvatar = createAsyncThunk<
+  TUserDto,
+  { userId: string; avatar: any },
+  { rejectValue: TRejectValue }
+>('uploadAvatar/auth', async ({ userId, avatar }, { rejectWithValue }) => {
+  try {
+    const { data } = await userService.uploadAvatar({ userId, avatar });
     return data;
   } catch (err: any) {
     const error: AxiosError<TErrorRes> = err;
@@ -133,6 +169,16 @@ const authSlice = createSlice({
         localStorage.removeItem('token');
         state.isAuth = false;
         state.user = null;
+      })
+
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.user = { ...state.user, ...action.payload };
+        state.status = 'idle';
+      })
+
+      .addCase(uploadAvatar.fulfilled, (state, action) => {
+        state.user = { ...state.user, ...action.payload };
+        state.status = 'idle';
       })
 
       .addMatcher(isAuthFetching, (state) => {

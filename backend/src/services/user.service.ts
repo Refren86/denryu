@@ -45,10 +45,10 @@ class UserService {
     );
 
     // using Dto we're getting rid of unnecessary fields
-    const userDto = new UserDto(newUser); // id, email, isActivated
+    const userDto = new UserDto(newUser); // _id, email, isActivated
 
     const tokens = tokenService.generateTokens({ ...userDto }); // turning class instance into plain js object to generate tokens
-    await tokenService.saveToken(userDto.id, tokens.refreshToken); // saving refresh token in db
+    await tokenService.saveToken(userDto._id, tokens.refreshToken); // saving refresh token in db
 
     return {
       ...tokens,
@@ -90,7 +90,7 @@ class UserService {
     const userDto = new UserDto(existingUser);
     const tokens = tokenService.generateTokens({ ...userDto });
 
-    await tokenService.saveToken(userDto.id, tokens.refreshToken); // saving refresh token in db
+    await tokenService.saveToken(userDto._id, tokens.refreshToken); // saving refresh token in db
 
     return {
       ...tokens,
@@ -116,16 +116,16 @@ class UserService {
       throw ApiError.UnauthorizedError();
     }
 
-    const user = await UserModel.findById(userData.id);
+    const user = await UserModel.findById(userData._id);
 
     if (!user) {
-      throw ApiError.BadRequest(`User with ID ${userData.id} doesn't exist`);
+      throw ApiError.BadRequest(`User with ID ${userData._id} doesn't exist`);
     }
 
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
 
-    await tokenService.saveToken(userDto.id, tokens.refreshToken); // saving refresh token in db
+    await tokenService.saveToken(userDto._id, tokens.refreshToken); // saving refresh token in db
 
     return {
       ...tokens,
@@ -134,8 +134,14 @@ class UserService {
   }
 
   async getAllUsers(): Promise<IUser[]> {
-    const users = UserModel.find();
+    const users = await UserModel.find();
     return users;
+  }
+
+  async updateUser(userId: string, data: Partial<IUser>): Promise<UserDto> {
+    const updatedUser = await UserModel.findByIdAndUpdate(userId, data, { new: true });
+    const userDto = new UserDto(updatedUser!);
+    return userDto;
   }
 }
 
